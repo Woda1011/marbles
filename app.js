@@ -1,14 +1,6 @@
 'use strict';
 /* global process */
 /* global __dirname */
-/*******************************************************************************
- * Copyright (c) 2015 IBM Corp.
- *
- * All rights reserved. 
- *
- * Contributors:
- *   David Huffman - Initial implementation
- *******************************************************************************/
 /////////////////////////////////////////
 ///////////// Setup Node.js /////////////
 /////////////////////////////////////////
@@ -187,25 +179,25 @@ function detect_tls_or_not(peer_array){
 // ==================================
 // configure options for ibm-blockchain-js sdk
 // ==================================
-var options = 	{
-					network:{
-						peers: [peers[0]],																	//lets only use the first peer! since we really don't need any more than 1
-						users: prefer_type1_users(users),													//dump the whole thing, sdk will parse for a good one
-						options: {
-									quiet: true, 															//detailed debug messages on/off true/false
-									tls: detect_tls_or_not(peers), 											//should app to peer communication use tls?
-									maxRetry: 1																//how many times should we retry register before giving up
-								}
-					},
-					chaincode:{
-						zip_url: 'https://github.com/ibm-blockchain/marbles/archive/v2.0.zip',
-						unzip_dir: 'marbles-2.0/chaincode',													//subdirectroy name of chaincode after unzipped
-						git_url: 'http://gopkg.in/ibm-blockchain/marbles.v2/chaincode',						//GO get http url
-					
-						//hashed cc name from prev deployment, comment me out to always deploy, uncomment me when its already deployed to skip deploying again
-						//deployed_name: '16e655c0fce6a9882896d3d6d11f7dcd4f45027fd4764004440ff1e61340910a9d67685c4bb723272a497f3cf428e6cf6b009618612220e1471e03b6c0aa76cb'
-					}
-				};
+var options = {
+    network: {
+        peers: [peers[0]],																	//lets only use the first peer! since we really don't need any more than 1
+        users: prefer_type1_users(users),													//dump the whole thing, sdk will parse for a good one
+        options: {
+            quiet: true, 															//detailed debug messages on/off true/false
+            tls: detect_tls_or_not(peers), 											//should app to peer communication use tls?
+            maxRetry: 1																//how many times should we retry register before giving up
+        }
+    },
+    chaincode: {
+        zip_url: 'https://github.com/ibm-blockchain/marbles/archive/v2.0.zip',
+        unzip_dir: 'marbles-2.0/chaincode',													//subdirectroy name of chaincode after unzipped
+        git_url: 'http://gopkg.in/ibm-blockchain/marbles.v2/chaincode',						//GO get http url
+
+        //hashed cc name from prev deployment, comment me out to always deploy, uncomment me when its already deployed to skip deploying again
+        deployed_name: '16e655c0fce6a9882896d3d6d11f7dcd4f45027fd4764004440ff1e61340910a9d67685c4bb723272a497f3cf428e6cf6b009618612220e1471e03b6c0aa76cb'
+    }
+};
 
 // ---- Fire off SDK ---- //
 var chaincode = null;																		//sdk will populate this var in time, lets give it high scope by creating it here
