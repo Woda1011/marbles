@@ -81,34 +81,34 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 	//create Artefact
 	//delete Artefact
-	//deploy Artefact (transfer to Device)
-	//undeploy Artefact (delete Device from Artefakt)
+	//deploy Artefact (transfer to Device) Artefact Stores a List of Devices which installed the particular artefact
+	//undeploy Artefact (delete Device from Artefakt) Removing an Device from an Artefacts Device List
 
 	// Handle different functions
-	if function == "init" {													//initialize the chaincode state, used as reset
+	if function == "init" {
 		return t.Init(stub, "init", args)
-	} else if function == "delete" {										//deletes an entity from its state
+	} else if function == "delete" {
 		res, err := t.Delete(stub, args)
-		cleanTrades(stub)													//lets make sure all open trades are still valid
+		cleanTrades(stub)
 		return res, err
-	} else if function == "write" {											//writes a value to the chaincode state
+	} else if function == "write" {
 		return t.Write(stub, args)
-	} else if function == "init_marble" {									//create a new marble
+	} else if function == "init_marble" {
 		return t.init_marble(stub, args)
-	} else if function == "set_user" {										//change owner of a marble
+	} else if function == "set_user" {
 		res, err := t.set_user(stub, args)
-		cleanTrades(stub)													//lets make sure all open trades are still valid
+		cleanTrades(stub)
 		return res, err
-	} else if function == "open_trade" {									//create a new trade order
+	} else if function == "open_trade" {
 		return t.open_trade(stub, args)
-	} else if function == "perform_trade" {									//forfill an open trade order
+	} else if function == "perform_trade" {
 		res, err := t.perform_trade(stub, args)
-		cleanTrades(stub)													//lets clean just in case
+		cleanTrades(stub)
 		return res, err
-	} else if function == "remove_trade" {									//cancel an open trade order
+	} else if function == "remove_trade" {
 		return t.remove_trade(stub, args)
 	}
-	fmt.Println("invoke did not find func: " + function)					//error
+	fmt.Println("invoke did not find func: " + function)
 
 	return nil, errors.New("Received unknown function invocation")
 }
