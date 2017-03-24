@@ -208,14 +208,21 @@ ibc.load(options, function (err, cc){														//parse/load chaincode, respo
 	}
 	else{
 		chaincode = cc;
+		console.log('deployed chaincode:', cc);
 		part1.setup(ibc, cc);																//pass the cc obj to part 1 node code
+		//TODO Could be removed
 		part2.setup(ibc, cc);																//pass the cc obj to part 2 node code
 
 		// ---- To Deploy or Not to Deploy ---- //
 		if(!cc.details.deployed_name || cc.details.deployed_name === ''){					//yes, go deploy
-			cc.deploy('init', ['99'], {delay_ms: 30000}, function(e){ 						//delay_ms is milliseconds to wait after deploy for conatiner to start, 50sec recommended
-				check_if_deployed(e, 1);
-			});
+			cc.deploy(
+			    'init',
+                ['99'],
+                {delay_ms: 30000},
+                function(e){ 						//delay_ms is milliseconds to wait after deploy for conatiner to start, 50sec recommended
+				    check_if_deployed(e, 1);
+			    }
+			);
 		}
 		else{																				//no, already deployed
 			console.log('chaincode summary file indicates chaincode has been previously deployed');

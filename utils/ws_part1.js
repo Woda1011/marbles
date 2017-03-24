@@ -15,6 +15,7 @@ module.exports.process_msg = function(ws, data){
 		if(data.type == 'create'){
 			console.log('its a create!');
 			if(data.name && data.color && data.size && data.user){
+				//TODO Create new Artefact
 				chaincode.invoke.init_marble([data.name, data.color, data.size, data.user], cb_invoked);	//create a new marble
 			}
 		}
@@ -25,6 +26,7 @@ module.exports.process_msg = function(ws, data){
 		else if(data.type == 'transfer'){
 			console.log('transfering msg');
 			if(data.name && data.user){
+			    //TODO Transfer Artefact to Device, after it sent an Update Request
 				chaincode.invoke.set_user([data.name, data.user]);
 			}
 		}
@@ -35,6 +37,7 @@ module.exports.process_msg = function(ws, data){
 			}
 		}
 		else if(data.type == 'chainstats'){
+		    //TODO Show already created Artefacts
 			console.log('chainstats msg');
 			ibc.chain_stats(cb_chainstats);
 		}

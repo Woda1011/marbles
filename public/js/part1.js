@@ -13,22 +13,22 @@ $(document).on('ready', function() {
 	// jQuery UI Events
 	// =================================================================================
 	$('#submit').click(function(){
-		console.log('creating marble');
+		console.log('creating artefact');
 		var obj = 	{
 						type: 'create',
 						name: $('input[name="name"]').val().replace(' ', ''),
-						color: $('.colorSelected').attr('color'),
-						size: $('select[name="size"]').val(),
-						user: $('select[name="user"]').val(),
+						color: "green",
+						size: "16",
+						user: "bob",
+                        artefactType: $('select[name="artefactType"]').val(),
+                        artefactName: $('input[name="artefactName"]').val().replace(' ', ''),
+                        artefactVersion: $('input[name="artefactVersion"]').val().replace(' ', ''),
 						v: 1
 					};
 		if(obj.user && obj.name && obj.color){
-			console.log('creating marble, sending', obj);
+			console.log('creating artefact, sending', obj);
 			ws.send(JSON.stringify(obj));
 			showHomePanel();
-			$('.colorValue').html('Color');											//reset
-			for(var i in bgcolors) $('.createball').removeClass(bgcolors[i]);		//reset
-			$('.createball').css('border', '2px dashed #fff');						//reset
 		}
 		return false;
 	});
@@ -41,24 +41,6 @@ $(document).on('ready', function() {
 		$('input[name="name"]').val('r' + randStr(6));
 	});
 
-	
-	//marble color picker
-	$(document).on('click', '.colorInput', function(){
-		$('.colorOptionsWrap').hide();											//hide any others
-		$(this).parent().find('.colorOptionsWrap').show();
-	});
-	$(document).on('click', '.colorOption', function(){
-		var color = $(this).attr('color');
-		var html = '<span class="fa fa-circle colorSelected ' + color + '" color="' + color + '"></span>';
-		
-		$(this).parent().parent().find('.colorValue').html(html);
-		$(this).parent().hide();
-
-		for(var i in bgcolors) $('.createball').removeClass(bgcolors[i]);			//remove prev color
-		$('.createball').css('border', '0').addClass(color + 'bg');				//set new color
-	});
-	
-	
 	//drag and drop marble
 	$('#user2wrap, #user1wrap, #trashbin').sortable({connectWith: '.sortable'}).disableSelection();
 	$('#user2wrap').droppable({drop:
@@ -111,7 +93,8 @@ $(document).on('ready', function() {
 		var part = window.location.pathname.substring(0,3);
 		window.history.pushState({},'', part + '/home');						//put it in url so we can f5
 		
-		console.log('getting new balls');
+		//TODO Load Softwareartefacts
+        console.log('getting new artefacts');
 		setTimeout(function(){
 			$('#user1wrap').html('');											//reset the panel
 			$('#user2wrap').html('');
