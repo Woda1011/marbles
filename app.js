@@ -209,8 +209,6 @@ ibc.load(options, function (err, cc){														//parse/load chaincode, respo
 		chaincode = cc;
 		console.log('deployed chaincode:', cc);
 		part1.setup(ibc, cc);																//pass the cc obj to part 1 node code
-		//TODO Could be removed
-		part2.setup(ibc, cc);																//pass the cc obj to part 2 node code
 
 		// ---- To Deploy or Not to Deploy ---- //
 		if(!cc.details.deployed_name || cc.details.deployed_name === ''){					//yes, go deploy
@@ -276,7 +274,6 @@ function check_if_deployed(e, attempt){
 // ============================================================================================================================
 function cb_deployed(e){
 	if(e != null){
-		//look at tutorial_part1.md in the trouble shooting section for help
 		console.log('! looks like a deploy error, holding off on the starting the socket\n', e);
 		if(!process.error) process.error = {type: 'deploy', msg: e.details};
 	}
@@ -290,7 +287,6 @@ function cb_deployed(e){
 				try{
 					var data = JSON.parse(message);
 					part1.process_msg(ws, data);											//pass the websocket msg to part 1 processing
-					part2.process_msg(ws, data);											//pass the websocket msg to part 2 processing
 				}
 				catch(e){
 					console.log('ws message error', e);
