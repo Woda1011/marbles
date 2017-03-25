@@ -68,21 +68,13 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 }
 
 // ============================================================================================================================
-// Run - Our entry point for Invocations - [LEGACY] obc-peer 4/25/2016
-// ============================================================================================================================
-func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	fmt.Println("run is running " + function)
-	return t.Invoke(stub, function, args)
-}
-
-// ============================================================================================================================
 // Invoke - Our entry point for Invocations
 // ============================================================================================================================
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 
-	//create Artefact
+	//create Artefact - done
 	//delete Artefact
 	//deploy Artefact (transfer to Device) Artefact Stores a List of Devices which installed the particular artefact
 	//undeploy Artefact (delete Device from Artefakt) Removing an Device from an Artefacts Device List
@@ -170,27 +162,27 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 		return nil, errors.New("Failed to delete state")
 	}
 
-	//get the marble index
-	marblesAsBytes, err := stub.GetState(artefactIndexStr)
+	//get the artefact index
+	artefactsAsBytes, err := stub.GetState(artefactIndexStr)
 	if err != nil {
-		return nil, errors.New("Failed to get marble index")
+		return nil, errors.New("Failed to get artefact index")
 	}
-	var marbleIndex []string
-	json.Unmarshal(marblesAsBytes, &marbleIndex)								//un stringify it aka JSON.parse()
+	var artefactIndex []string
+	json.Unmarshal(artefactsAsBytes, &artefactIndex)								//un stringify it aka JSON.parse()
 	
-	//remove marble from index
-	for i,val := range marbleIndex{
+	//remove artefact from index
+	for i,val := range artefactIndex {
 		fmt.Println(strconv.Itoa(i) + " - looking at " + val + " for " + name)
 		if val == name{															//find the correct marble
-			fmt.Println("found marble")
-			marbleIndex = append(marbleIndex[:i], marbleIndex[i+1:]...)			//remove it
-			for x:= range marbleIndex{											//debug prints...
-				fmt.Println(string(x) + " - " + marbleIndex[x])
+			fmt.Println("found artefact")
+			artefactIndex = append(artefactIndex[:i], artefactIndex[i+1:]...)			//remove it
+			for x:= range artefactIndex {											//debug prints...
+				fmt.Println(string(x) + " - " + artefactIndex[x])
 			}
 			break
 		}
 	}
-	jsonAsBytes, _ := json.Marshal(marbleIndex)									//save new index
+	jsonAsBytes, _ := json.Marshal(artefactIndex)									//save new index
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)
 	return nil, nil
 }
@@ -260,7 +252,6 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 		fmt.Println(res);
 		return nil, errors.New("This Artefact arleady exists")				//all stop a marble by this name exists
 	}
-
 
 	//build the marble json string manually
 	str := `{"artefactVersion": "` + version + `", + "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": ` + hash + `, "timestamp": "` + timestamp + `"}`
