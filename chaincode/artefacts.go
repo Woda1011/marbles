@@ -15,7 +15,10 @@ import (
 type SimpleChaincode struct {
 }
 
-var artefactIndexStr = "_artefactindex"				//name for the key/value that will store a list of all known marbles
+
+
+var artefactIndexStr = "_artefactindex"
+var deviceIndexStr = "_deviceindex"
 
 type Artefact struct{
 	Version string `json:"version"`					//the fieldtags are needed to keep case from bouncing around
@@ -29,6 +32,19 @@ type Artefact struct{
 	Timestamp string `json:"timestamp"`
 }
 
+type Device struct {
+	DeviceId string
+	CurrentArtefactName string
+	CurrentArtefactVerision string
+}
+
+type Deployment struct {
+	DeviceId string
+	CurrentArtefactHash string
+	Timestamp int64
+	TransactionType string
+}
+
 
 // ============================================================================================================================
 // Main
@@ -36,7 +52,7 @@ type Artefact struct{
 func main() {
 	err := shim.Start(new(SimpleChaincode))
 	if err != nil {
-		fmt.Printf("Error starting Simple chaincode: %s", err)
+		fmt.Printf("Error starting Artefact Deployment chaincode: %s", err)
 	}
 }
 
@@ -55,15 +71,6 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 		return nil, err
 	}
 
-	//marshal an emtpy array of strings to clear the index for the devices
-	var trades AllTrades
-	jsonAsBytes, _ = json.Marshal(trades)								//clear the open trade struct
-
-	err = stub.PutState(openTradesStr, jsonAsBytes)
-	if err != nil {
-		return nil, err
-	}
-	
 	return nil, nil
 }
 
@@ -75,7 +82,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 
 	//create Artefact - done
-	//delete Artefact
+	//delete Artefact - done
 	//deploy Artefact (transfer to Device) Artefact Stores a List of Devices which installed the particular artefact
 	//undeploy Artefact (delete Device from Artefakt) Removing an Device from an Artefacts Device List
 
@@ -216,7 +223,7 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 
 
 	if len(args) != 4 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 5")
+		return nil, errors.New("Incorrect number of arguments. Expecting 4")
 	}
 
 	//input sanitation
@@ -240,7 +247,7 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	artefactType := args[3]
 	timestamp := makeTimestamp()
 
-	//check if marble already exists
+	//check if already exists
 	artefactAsBytes, err := stub.GetState(name + version)
 	if err != nil {
 		return nil, errors.New("Failed to get Artefact name + version")
@@ -250,11 +257,11 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	if res.Name == name && res.Version == version {
 		fmt.Println("This Artefact arleady exists: " + name + version)
 		fmt.Println(res);
-		return nil, errors.New("This Artefact arleady exists")				//all stop a marble by this name exists
+		return nil, errors.New("This Artefact arleady exists")
 	}
 
-	//build the marble json string manually
-	str := `{"artefactVersion": "` + version + `", + "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": ` + hash + `, "timestamp": "` + timestamp + `"}`
+	//build the json string manually
+	str := `{"artefactVersion": "` + version + `", + "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": "` + hash + `", "timestamp": "` + timestamp + `"}`
 	err = stub.PutState(name + version, []byte(str))
 	if err != nil {
 		return nil, err
@@ -275,6 +282,72 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)						//store name of marble
 
 	fmt.Println("- end init artefact")
+	return nil, nil
+}
+
+// ============================================================================================================================
+// Init Device - create a new Device, store into chaincode state
+// ============================================================================================================================
+func (t *SimpleChaincode) init_device(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	var err error
+
+	if len(args) != 3 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 3")
+	}
+
+	//input sanitation
+	fmt.Println("- start init artefact")
+	if len(args[0]) <= 0 {
+		return nil, errors.New("1st argument must be a non-empty string")
+	}
+	if len(args[1]) <= 0 {
+		return nil, errors.New("2nd argument must be a non-empty string")
+	}
+	if len(args[2]) <= 0 {
+		return nil, errors.New("3rd argument must be a non-empty string")
+	}
+
+	deviceId := args[0]
+	currentArtefactVersion 	:= args[1]
+	currentArtefactName 	:= args[2]
+	timestamp := makeTimestamp()
+
+	//check if device already exists
+	deviceAsBytes, err := stub.GetState(deviceId)
+	if err != nil {
+		return nil, errors.New("Failed to get Device for deviceId")
+	}
+	res := Device{}
+	json.Unmarshal(deviceAsBytes, &res)
+	if res.DeviceId == deviceId {
+		fmt.Println("This Device arleady exists: " + deviceId)
+		fmt.Println(res);
+		return nil, errors.New("This Device arleady exists")
+	}
+
+	//build the json string manually
+	str := `{"deviceId": "` + deviceId + `", + "currentArtefactVersion": "` + currentArtefactVersion + `", "artefactName": "` + currentArtefactName + `", "timestamp": "` + timestamp + `"}`
+	err = stub.PutState(deviceId, []byte(str))
+	if err != nil {
+		return nil, err
+	}
+
+	//get the device index
+	devicesAsBytes, err := stub.GetState(deviceIndexStr)
+	if err != nil {
+		return nil, errors.New("Failed to get device index")
+	}
+	var deviceIndex []string
+	json.Unmarshal(devicesAsBytes, &deviceIndex)							//un stringify it aka JSON.parse()
+
+	//append
+	deviceIndex = append(deviceIndex, deviceId)									//add marble name to index list
+	fmt.Println("! device index: ", deviceIndex)
+	jsonAsBytes, _ := json.Marshal(deviceIndex)
+	err = stub.PutState(deviceIndexStr, jsonAsBytes)						//store name of marble
+
+	fmt.Println("- end init device")
 	return nil, nil
 }
 
