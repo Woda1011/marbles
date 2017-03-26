@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"encoding/json"
 	"time"
-	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -21,7 +20,7 @@ var artefactIndexStr = "_artefactindex"
 var deviceIndexStr = "_deviceindex"
 
 type Artefact struct{
-	Version string `json:"version"`					//the fieldtags are needed to keep case from bouncing around
+	Version string `json:"version"`
 	Name 	string `json:"name"`
 	Hash 	string `json:"hash"`
 	//ManufacturerId string `json:"manufacturererId"`
@@ -38,6 +37,7 @@ type Device struct {
 	CurrentArtefactVerision string
 }
 
+// Maybe needed to keep track of all deployment transactions
 type Deployment struct {
 	DeviceId string
 	CurrentArtefactHash string
@@ -60,13 +60,16 @@ func main() {
 // Init - reset all the things
 // ============================================================================================================================
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-
 	var err error
-
-	//marshal an emtpy array of strings to clear the index for the artefacts
+	//marshal an emtpy array of strings to clear the index for the artefacts and the devices
 	var empty []string
 	jsonAsBytes, _ := json.Marshal(empty)
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	err = stub.PutState(deviceIndexStr, jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -81,37 +84,18 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	fmt.Println("invoke is running " + function)
 
 
-	//create Artefact - done
-	//delete Artefact - done
-	//deploy Artefact (transfer to Device) Artefact Stores a List of Devices which installed the particular artefact
-	//undeploy Artefact (delete Device from Artefakt) Removing an Device from an Artefacts Device List
-
-	// Handle different functions
 	if function == "init" {
 		return t.Init(stub, "init", args)
 	} else if function == "delete" {
 		res, err := t.Delete(stub, args)
-		cleanTrades(stub)
 		return res, err
-	} else if function == "write" {
-		return t.Write(stub, args)
 	} else if function == "init_artefact" {
-		return t.init_marble(stub, args)
+		return t.init_artefact(stub, args)
 	} else if function == "deploy_artefact" {
 		res, err := t.deploy_artefact(stub, args)
-		cleanTrades(stub)
 		return res, err
-	} else if function == "open_trade" {
-		return t.open_trade(stub, args)
-	} else if function == "perform_trade" {
-		res, err := t.perform_trade(stub, args)
-		cleanTrades(stub)
-		return res, err
-	} else if function == "remove_trade" {
-		return t.remove_trade(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function)
-
 	return nil, errors.New("Received unknown function invocation")
 }
 
@@ -146,13 +130,13 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 	}
 
 	name = args[0]
-	valAsbytes, err := stub.GetState(name)									//get the var from chaincode state
+	valAsbytes, err := stub.GetState(name)
 	if err != nil {
 		jsonResp = "{\"Error\":\"Failed to get state for " + name + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 
-	return valAsbytes, nil													//send it onward
+	return valAsbytes, nil
 }
 
 // ============================================================================================================================
@@ -164,10 +148,12 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 	}
 	
 	name := args[0]
-	err := stub.DelState(name)													//remove the key from chaincode state
+	err := stub.DelState(name)
 	if err != nil {
 		return nil, errors.New("Failed to delete state")
 	}
+
+	//TODO Update Device index if a device should be deleted
 
 	//get the artefact index
 	artefactsAsBytes, err := stub.GetState(artefactIndexStr)
@@ -175,45 +161,25 @@ func (t *SimpleChaincode) Delete(stub shim.ChaincodeStubInterface, args []string
 		return nil, errors.New("Failed to get artefact index")
 	}
 	var artefactIndex []string
-	json.Unmarshal(artefactsAsBytes, &artefactIndex)								//un stringify it aka JSON.parse()
+	json.Unmarshal(artefactsAsBytes, &artefactIndex)
 	
 	//remove artefact from index
 	for i,val := range artefactIndex {
 		fmt.Println(strconv.Itoa(i) + " - looking at " + val + " for " + name)
-		if val == name{															//find the correct marble
+		if val == name{
 			fmt.Println("found artefact")
-			artefactIndex = append(artefactIndex[:i], artefactIndex[i+1:]...)			//remove it
-			for x:= range artefactIndex {											//debug prints...
+			artefactIndex = append(artefactIndex[:i], artefactIndex[i+1:]...)
+			for x:= range artefactIndex {
 				fmt.Println(string(x) + " - " + artefactIndex[x])
 			}
 			break
 		}
 	}
-	jsonAsBytes, _ := json.Marshal(artefactIndex)									//save new index
+	jsonAsBytes, _ := json.Marshal(artefactIndex)
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)
 	return nil, nil
 }
 
-// ============================================================================================================================
-// Write - write variable into chaincode state
-// ============================================================================================================================
-func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var name, value string // Entities
-	var err error
-	fmt.Println("running write()")
-
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the variable and value to set")
-	}
-
-	name = args[0]															//rename for funsies
-	value = args[1]
-	err = stub.PutState(name, []byte(value))								//write the variable into the chaincode state
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
-}
 
 // ============================================================================================================================
 // Init Artefact - create a new artefact, store into chaincode state
@@ -375,7 +341,7 @@ func (t *SimpleChaincode) deploy_artefact(stub shim.ChaincodeStubInterface, args
 
 	artefactAsBytes, err := stub.GetState(args[1] + args[2])
 	if err != nil {
-		return nil, errors.New("Failed to get artefact")
+		return artefactAsBytes, errors.New("Failed to get artefact")
 	}
 
 	res := Device{}
