@@ -250,7 +250,7 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)						//store name of marble
 
 	fmt.Println("- end init artefact")
-	return `{"myMessage:" "Hello"}`, nil
+	return nil, nil
 }
 
 // ============================================================================================================================
