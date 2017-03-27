@@ -20,14 +20,14 @@ var artefactIndexStr = "_artefactindex"
 var deviceIndexStr = "_deviceindex"
 
 type Artefact struct{
-	Version string `json:"version"`
-	Name 	string `json:"name"`
-	Hash 	string `json:"hash"`
+	Version string `json:"artefactVersion"`
+	Name 	string `json:"artefactName"`
+	Hash 	string `json:"artefactHash"`
 	//ManufacturerId string `json:"manufacturererId"`
 	//Size string `json:"size"`
 	//prevVersionBlockHash string `json:"prevVersionBlockHash"`
 	//prevArtefactBlockHash string `json:"prevArtefactBlockHash"`
-	ArtefactType string `json:"type"`
+	ArtefactType string `json:"artefactType"`
 	Timestamp string `json:"timestamp"`
 }
 
