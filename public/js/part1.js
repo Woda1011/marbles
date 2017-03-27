@@ -15,16 +15,13 @@ $(document).on('ready', function() {
 		console.log('creating artefact');
 		var obj = 	{
 						type: 'create',
-						name: $('input[name="name"]').val().replace(' ', ''),
-						color: "green",
-						size: "16",
-						user: "bob",
+						artefactHash: $('input[name="hash"]').val().replace(' ', ''),
                         artefactType: $('select[name="artefactType"]').val(),
                         artefactName: $('input[name="artefactName"]').val().replace(' ', ''),
                         artefactVersion: $('input[name="artefactVersion"]').val().replace(' ', ''),
 						v: 1
 					};
-		if(obj.user && obj.name && obj.color){
+		if(obj.artefactType && obj.artefactHash && obj.artefactName && obj.artefactVersion){
 			console.log('creating artefact, sending', obj);
 			ws.send(JSON.stringify(obj));
 			showHomePanel();

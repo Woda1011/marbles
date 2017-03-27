@@ -14,9 +14,9 @@ module.exports.process_msg = function(ws, data){
 	if(data.v === 1){																						//only look at messages for part 1
 		if(data.type == 'create'){
 			console.log('its a create!');
-			if(data.name && data.color && data.size && data.user){
-				//TODO Create new Artefact
-				chaincode.invoke.init_marble([data.name, data.color, data.size, data.user], cb_invoked);	//create a new marble
+			if(data.artefactVersion && data.artefactName && data.artefactType){
+				//TODO Create new Artefact version, name, hash, type
+				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, 'Hash123', data.artefactType], cb_invoked);
 			}
 		}
 		else if(data.type == 'get'){
