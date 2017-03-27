@@ -15,7 +15,6 @@ module.exports.process_msg = function(ws, data){
 		if(data.type == 'create'){
 			console.log('its a create!');
 			if(data.artefactVersion && data.artefactName && data.artefactType){
-				//TODO Create new Artefact version, name, hash, type
 				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, 'Hash123', data.artefactType], cb_invoked);
 			}
 		}
@@ -56,10 +55,10 @@ module.exports.process_msg = function(ws, data){
 				//serialized version
 				async.eachLimit(keys, concurrency, function(key, cb) {
 					console.log('!', json[key]);
-					chaincode.query.read([json[key]], function(e, marble) {
-						if(e != null) console.log('[ws error] did not get marble:', e);
+					chaincode.query.read([json[key]], function(e, artefact) {
+						if(e != null) console.log('[ws error] did not get artefact:', e);
 						else {
-							if(marble) sendMsg({msg: 'marbles', e: e, marble: JSON.parse(marble)});
+							if(artefact) sendMsg({msg: 'artefact', e: e, artefact: JSON.parse(artefact)});
 							cb(null);
 						}
 					});

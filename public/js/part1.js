@@ -6,7 +6,7 @@ var ws = {};
 // =================================================================================
 $(document).on('ready', function() {
 	connect_to_server();
-	$('input[name="name"]').val('r' + randStr(6));
+	$('input[name="hash"]').val('r' + randStr(6));
 	
 	// =================================================================================
 	// jQuery UI Events
