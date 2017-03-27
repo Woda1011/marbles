@@ -21,7 +21,7 @@ module.exports.process_msg = function(ws, data){
 		}
 		else if(data.type == 'get'){
 			console.log('get marbles msg');
-			chaincode.query.read(['_marbleindex'], cb_got_index);
+			chaincode.query.read(['_artefactindex'], cb_got_index);
 		}
 		else if(data.type == 'transfer'){
 			console.log('transfering msg');
@@ -45,10 +45,11 @@ module.exports.process_msg = function(ws, data){
 
 	//got the marble index, lets get each marble
 	function cb_got_index(e, index){
-		if(e != null) console.log('[ws error] did not get marble index:', e);
+		if(e != null) console.log('[ws error] did not get artefact index:', e);
 		else{
 			try{
 				var json = JSON.parse(index);
+                console.log('[ws info] got artefact index:', index);
 				var keys = Object.keys(json);
 				var concurrency = 1;
 

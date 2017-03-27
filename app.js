@@ -189,12 +189,12 @@ var options = {
         }
     },
     chaincode: {
-        zip_url: 'https://github.com/ibm-blockchain/marbles/archive/v2.0.zip',
+        zip_url: 'https://github.com/Woda1011/marbles/archive/v2.0.zip',
         unzip_dir: 'marbles-2.0/chaincode',													//subdirectroy name of chaincode after unzipped
-        git_url: 'http://gopkg.in/ibm-blockchain/marbles.v2/chaincode',						//GO get http url
+        git_url: 'github.com/marbles/chaincode',						//GO get http url
 
         //hashed cc name from prev deployment, comment me out to always deploy, uncomment me when its already deployed to skip deploying again
-        deployed_name: '16e655c0fce6a9882896d3d6d11f7dcd4f45027fd4764004440ff1e61340910a9d67685c4bb723272a497f3cf428e6cf6b009618612220e1471e03b6c0aa76cb'
+        deployed_name: 'fc9329be13349b6946d1e6071ca8764c57d04fbbb37629309e35c7a4943524843c6bfb920b59017b38191ea7b4c0278f8f206b672164f2cf164da5e7c9a0ad93'
     }
 };
 
@@ -214,7 +214,7 @@ ibc.load(options, function (err, cc){														//parse/load chaincode, respo
 		if(!cc.details.deployed_name || cc.details.deployed_name === ''){					//yes, go deploy
 			cc.deploy(
 			    'init',
-                ['99'],
+                [],
                 {delay_ms: 30000},
                 function(e){ 						//delay_ms is milliseconds to wait after deploy for conatiner to start, 50sec recommended
 				    check_if_deployed(e, 1);
@@ -241,7 +241,7 @@ function check_if_deployed(e, attempt){
 	}
 	else{
 		console.log('[preflight check]', attempt, ': testing if chaincode is ready');
-		chaincode.query.read(['_marbleindex'], function(err, resp){
+		chaincode.query.read(['_artefactindex'], function(err, resp){
 			var cc_deployed = false;
 			try{
 				if(err == null){															//no errors is good, but can't trust that alone
@@ -316,8 +316,7 @@ function cb_deployed(e){
 				console.log('hey new block, lets refresh and broadcast to all', chain_stats.height-1);
 				ibc.block_stats(chain_stats.height - 1, cb_blockstats);
 				wss.broadcast({msg: 'reset'});
-				chaincode.query.read(['_marbleindex'], cb_got_index);
-				chaincode.query.read(['_opentrades'], cb_got_trades);
+				chaincode.query.read(['_artefactindex'], cb_got_index);
 			}
 			
 			//got the block's stats, lets send the statistics
@@ -330,9 +329,9 @@ function cb_deployed(e){
 				}
 			}
 			
-			//got the marble index, lets get each marble
+			//got the artefact index, lets get each artefact
 			function cb_got_index(e, index){
-				if(e != null) console.log('marble index error:', e);
+				if(e != null) console.log('artefact index error:', e);
 				else{
 					try{
 						var json = JSON.parse(index);
@@ -342,36 +341,20 @@ function cb_deployed(e){
 						}
 					}
 					catch(e){
-						console.log('marbles index msg error:', e);
+						console.log('artefact index msg error:', e);
 					}
 				}
 			}
 			
-			//call back for getting a marble, lets send a message
-			function cb_got_marble(e, marble){
-				if(e != null) console.log('marble error:', e);
+			//call back for getting a artefact, lets send a message
+			function cb_got_marble(e, artefact){
+				if(e != null) console.log('artefact error:', e);
 				else {
 					try{
-						wss.broadcast({msg: 'marbles', marble: JSON.parse(marble)});
+						wss.broadcast({msg: 'artefact', artefact: JSON.parse(artefact)});
 					}
 					catch(e){
-						console.log('marble msg error', e);
-					}
-				}
-			}
-			
-			//call back for getting open trades, lets send the trades
-			function cb_got_trades(e, trades){
-				if(e != null) console.log('trade error:', e);
-				else {
-					try{
-						trades = JSON.parse(trades);
-						if(trades && trades.open_trades){
-							wss.broadcast({msg: 'open_trades', open_trades: trades.open_trades});
-						}
-					}
-					catch(e){
-						console.log('trade msg error', e);
+						console.log('artefact msg error', e);
 					}
 				}
 			}
