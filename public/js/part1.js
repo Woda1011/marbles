@@ -6,28 +6,38 @@ var ws = {};
 // =================================================================================
 $(document).on('ready', function() {
 	connect_to_server();
-	$('input[name="hash"]').val('r' + randStr(6));
-	
+
 	// =================================================================================
 	// jQuery UI Events
 	// =================================================================================
-	$('#submit').click(function(){
-		console.log('creating artefact');
-		var obj = 	{
-						type: 'create',
-						artefactHash: $('input[name="hash"]').val().replace(' ', ''),
-                        artefactType: $('select[name="artefactType"]').val(),
-                        artefactName: $('input[name="artefactName"]').val().replace(' ', ''),
-                        artefactVersion: $('input[name="artefactVersion"]').val().replace(' ', ''),
-						v: 1
-					};
-		if(obj.artefactType && obj.artefactHash && obj.artefactName && obj.artefactVersion){
-			console.log('creating artefact, sending', obj);
-			ws.send(JSON.stringify(obj));
-			showHomePanel();
-		}
-		return false;
-	});
+    $('#submit').click(function () {
+        var fileReader = new FileReader();
+        console.log('creating artefact');
+        console.log('found file: ' + $('input[name="artefactFile"]').val());
+        var file = $('input[name="artefactFile"]')[0].files[0];
+        console.log('got file: ' + file);
+        fileReader.onload = function (event) {
+            console.log('finished parsing as array buffer: ' + event.target.result);
+            var obj = {
+                type: 'create',
+                artefactType: $('select[name="artefactType"]').val(),
+                artefactName: $('input[name="artefactName"]').val(),
+                artefactVersion: $('input[name="artefactVersion"]').val(),
+                artefact: event.target.result,
+                v: 1
+            };
+
+            if (obj.artefactType && obj.artefactName && obj.artefactVersion && obj.artefact) {
+                console.log('creating artefact, sending', obj);
+                ws.send(JSON.stringify(obj));
+                showHomePanel();
+            }
+
+            return false;
+        };
+        console.log('Parsing as array buffer');
+        fileReader.readAsArrayBuffer(file)
+    });
 	
 	$('#homeLink').click(function(){
 		showHomePanel();

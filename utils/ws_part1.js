@@ -4,6 +4,7 @@
 var ibc = {};
 var chaincode = {};
 var async = require('async');
+var hash = require('object-hash');
 
 module.exports.setup = function(sdk, cc){
 	ibc = sdk;
@@ -14,8 +15,12 @@ module.exports.process_msg = function(ws, data){
 	if(data.v === 1){																						//only look at messages for part 1
 		if(data.type == 'create'){
 			console.log('its a create!');
-			if(data.artefactVersion && data.artefactName && data.artefactType){
-				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, data.artefactHash, data.artefactType], cb_invoked);
+
+            data.artefactHash = hash(data);
+            console.log('data hashed with sha1: ' + JSON.stringify(data));
+
+			if(data.artefactType && data.artefactHash && data.artefactName && data.artefactVersion && data.artefact){
+				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, data.artefactHash, data.artefactType, data.artefact], cb_invoked);
 			}
 		}
 		else if(data.type == 'get'){
