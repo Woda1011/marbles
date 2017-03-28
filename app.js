@@ -337,7 +337,7 @@ function cb_deployed(e){
 						var json = JSON.parse(index);
 						for(var i in json){
 							console.log('!', i, json[i]);
-							chaincode.query.read([json[i]], cb_got_marble);					//iter over each, read their values
+							chaincode.query.read([json[i]], cb_got_artefact);					//iter over each, read their values
 						}
 					}
 					catch(e){
@@ -347,7 +347,7 @@ function cb_deployed(e){
 			}
 			
 			//call back for getting a artefact, lets send a message
-			function cb_got_marble(e, artefact){
+			function cb_got_artefact(e, artefact){
 				if(e != null) console.log('artefact error:', e);
 				else {
 					try{
