@@ -15,7 +15,7 @@ module.exports.process_msg = function(ws, data){
 		if(data.type == 'create'){
 			console.log('its a create!');
 			if(data.artefactVersion && data.artefactName && data.artefactType){
-				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, 'Hash123', data.artefactType], cb_invoked);
+				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, data.artefactHash, data.artefactType], cb_invoked);
 			}
 		}
 		else if(data.type == 'get'){
@@ -42,7 +42,7 @@ module.exports.process_msg = function(ws, data){
 		}
 	}
 
-	//got the marble index, lets get each marble
+	//got the artefact index, lets get each artefact
 	function cb_got_index(e, index){
 		if(e != null) console.log('[ws error] did not get artefact index:', e);
 		else{

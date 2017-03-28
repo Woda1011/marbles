@@ -216,21 +216,21 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	timestamp := makeTimestamp()
 
 	//check if already exists
-	artefactAsBytes, err := stub.GetState(name + version)
+	artefactAsBytes, err := stub.GetState(hash)
 	if err != nil {
-		return nil, errors.New("Failed to get Artefact name + version")
+		return nil, errors.New("Failed to get Artefact hash")
 	}
 	res := Artefact{}
 	json.Unmarshal(artefactAsBytes, &res)
-	if res.Name == name && res.Version == version {
-		fmt.Println("This Artefact arleady exists: " + name + version)
+	if res.Hash == hash{
+		fmt.Println("This Artefact arleady exists: " + hash)
 		fmt.Println(res);
 		return nil, errors.New("This Artefact arleady exists")
 	}
 
 	//build the json string manually
 	str := `{"artefactVersion": "` + version + `", + "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": "` + hash + `", "timestamp": "` + strconv.FormatInt(timestamp, 10) + `"}`
-	err = stub.PutState(name + version, []byte(str))
+	err = stub.PutState(hash, []byte(str))
 	if err != nil {
 		return nil, err
 	}
@@ -241,13 +241,15 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("Failed to get artefact index")
 	}
 	var artefactIndex []string
-	json.Unmarshal(artefactsAsBytes, &artefactIndex)							//un stringify it aka JSON.parse()
+
+	//un stringify it aka JSON.parse()
+	json.Unmarshal(artefactsAsBytes, &artefactIndex)
 	
 	//append
-	artefactIndex = append(artefactIndex, name + version)									//add marble name to index list
+	artefactIndex = append(artefactIndex, hash)
 	fmt.Println("! artefact index: ", artefactIndex)
 	jsonAsBytes, _ := json.Marshal(artefactIndex)
-	err = stub.PutState(artefactIndexStr, jsonAsBytes)						//store name of marble
+	err = stub.PutState(artefactIndexStr, jsonAsBytes)
 
 	fmt.Println("- end init artefact")
 	return nil, nil
