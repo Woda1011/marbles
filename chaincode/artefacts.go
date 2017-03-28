@@ -229,7 +229,7 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	}
 
 	//build the json string manually
-	str := `{"artefactVersion": "` + version + `", + "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": "` + hash + `", "timestamp": "` + strconv.FormatInt(timestamp, 10) + `"}`
+	str := `{"artefactVersion": "` + version + `", "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": "` + hash + `", "timestamp": "` + strconv.FormatInt(timestamp, 10) + `"}`
 	err = stub.PutState(hash, []byte(str))
 	if err != nil {
 		return nil, err
