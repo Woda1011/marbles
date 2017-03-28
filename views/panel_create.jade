@@ -6,9 +6,6 @@
 
 
 		form(action="/create" method="POST")#createform
-			legend 
-				input(type="text" name="hash")
-			br
 
 			legend
 				input(type="text" name="artefactName" placeholder="Artefact Name")
@@ -21,9 +18,13 @@
 			legend
 				select(name="artefactType")
 					option(value="1" disabled="disabled" selected="selected") Type
-					option(value="1") Release
-					option(value="2") Bugfix
-					option(value="3") Feature
+					option(value="Release") Release
+					option(value="Bugfix") Bugfix
+					option(value="Feature") Feature
+			br
+
+			legend
+				input(type="file" name="artefactFile" placeholder="Artefact File")
 			br
 
 			button(type="button")#submit
