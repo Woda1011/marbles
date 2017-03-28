@@ -190,7 +190,7 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	var err error
 
 
-	if len(args) != 4 {
+	if len(args) != 5 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 4")
 	}
 
@@ -209,10 +209,15 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
 
+	if len(args[4]) <= 0 {
+		return nil, errors.New("5th argument must be a non-empty string")
+	}
+
 	version := args[0]
 	name 	:= args[1]
 	hash 	:= args[2]
 	artefactType := args[3]
+	artefact := args[4]
 	timestamp := makeTimestamp()
 
 	//check if already exists
@@ -229,7 +234,7 @@ func (t *SimpleChaincode) init_artefact(stub shim.ChaincodeStubInterface, args [
 	}
 
 	//build the json string manually
-	str := `{"artefactVersion": "` + version + `", "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": "` + hash + `", "timestamp": "` + strconv.FormatInt(timestamp, 10) + `"}`
+	str := `{"artefactVersion": "` + version + `", "artefactType": "` + artefactType + `", "artefactName": "` + name + `", "hash": "` + hash + `", "artefact": "` + artefact +`", "timestamp": "` + strconv.FormatInt(timestamp, 10) + `"}`
 	err = stub.PutState(hash, []byte(str))
 	if err != nil {
 		return nil, err
