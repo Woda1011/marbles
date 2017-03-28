@@ -108,7 +108,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	//Read Device State
 	//Get Artefact Information
 	//Get Artefact
-
 	// Handle different functions
 	if function == "read" {													//read a variable
 		return t.read(stub, args)
