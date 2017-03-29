@@ -1,5 +1,7 @@
 /* global new_block,formatDate, randStr, bag, $, clear_blocks, document, WebSocket, escapeHtml, window */
 var ws = {};
+var artefacts = new Map();
+
 
 // =================================================================================
 // On Load
@@ -93,11 +95,11 @@ $(document).on('ready', function() {
     var clicked = false;
     $(document).on('click', '.ball', function(event){
         clicked = !clicked;
-        show_artefact_details(event, Number($(this).html()));
+        showArtefactDetails(event, this.id);
     });
 
     $(document).on('mouseover', '.ball', function(event){
-        show_artefact_details(event, Number($(this).html()));
+        showArtefactDetails(event, this.id);
     });
 
     $(document).on('mouseleave', '.marblesWrap', function(){
@@ -170,6 +172,7 @@ function connect_to_server(){
 		console.log('WS CONNECTED');
 		connected = true;
 		clear_blocks();
+        clear_artefacts();
 		$('#errorNotificationPanel').fadeOut();
 		ws.send(JSON.stringify({type: 'get', v:1}));
 		ws.send(JSON.stringify({type: 'chainstats', v:1}));
@@ -185,7 +188,6 @@ function connect_to_server(){
 		try{
 			var msgObj = JSON.parse(msg.data);
 			if(msgObj.artefact){
-				//TODO create temp artefact store
 				console.log('rec', msgObj.msg, msgObj);
 				build_artefact(msgObj.artefact);
 			}
@@ -232,7 +234,7 @@ function build_artefact(data){
 	//data.name = escapeHtml(data.name);
 	//data.color = escapeHtml(data.color);
 	//data.user = escapeHtml(data.user);
-	
+	addArtefact(data);
 	console.log('got a artefact: ', data.artefactName);
 	if(!$('#' + data.hash).length){								//only populate if it doesn't exists
 		
@@ -245,14 +247,26 @@ function build_artefact(data){
 		}
 	}
 	return html;
-function show_artefact_details(event, id){
+}
+
+function addArtefact(artefactToAdd) {
+        artefacts.set(artefactToAdd.hash, artefactToAdd);
+}
+
+function showArtefactDetails(event, id){
     var left = event.pageX - $('#artefactDetails').parent().offset().left - 50;
     if(left < 0) left = 0;
 
-    var html = '<p class="blckLegend"> Artefact Name: ' + id + '</p>';
-    html += '<hr class="line"/><p>Created: 1490780257587</p>';
-    html += '<p> Version: 1.0</p>';
-    html += '<p> Type: Release</p>';
-    html += '<p> Hash: cfe35fb8ff6a57893a0b9456c11ba53381a1756d</p>';
+    var temp = artefacts.get(id);
+
+    var html = '<p class="blckLegend"> Artefact Name: ' + temp.artefactName + '</p>';
+    html += '<hr class="line"/><p>Created: ' + temp.timestamp + '</p>';
+    html += '<p> Version: ' + temp.artefactVersion + '</p>';
+    html += '<p> Type: ' + temp.artefactType + '</p>';
+    html += '<p> Hash: ' + temp.hash + '</p>';
     $('#artefactDetails').html(html).css('left', left).fadeIn();
+}
+
+function clear_artefacts(){										//empty blocks
+    artefact = new Map();
 }
