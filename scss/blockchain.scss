@@ -53,6 +53,19 @@
 	word-break: break-all;
 	font-size: 12px;
 }
+
+#artefactDetails{
+	background: $acc_color1;
+	color: $acc_color2;
+	display:none;
+	position:relative;
+	top: 40px;
+	width: 400px;
+	border-radius:10px;
+	padding:15px 30px;
+	word-break: break-all;
+	font-size: 12px;
+}
 .blckLegend{
 	font-size: 16px;
 	font-weight: bold;

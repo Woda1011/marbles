@@ -89,8 +89,21 @@ $(document).on('ready', function() {
 			}
 		}
 	});
-	
-	
+
+    var clicked = false;
+    $(document).on('click', '.ball', function(event){
+        clicked = !clicked;
+        show_artefact_details(event, Number($(this).html()));
+    });
+
+    $(document).on('mouseover', '.ball', function(event){
+        show_artefact_details(event, Number($(this).html()));
+    });
+
+    $(document).on('mouseleave', '.marblesWrap', function(){
+        if(!clicked) $('#artefactDetails').fadeOut();
+    });
+
 	// =================================================================================
 	// Helper Fun
 	// ================================================================================
@@ -171,9 +184,10 @@ function connect_to_server(){
 	function onMessage(msg){
 		try{
 			var msgObj = JSON.parse(msg.data);
-			if(msgObj.marble){
+			if(msgObj.artefact){
+				//TODO create temp artefact store
 				console.log('rec', msgObj.msg, msgObj);
-				build_ball(msgObj.marble);
+				build_artefact(msgObj.artefact);
 			}
 			else if(msgObj.msg === 'chainstats'){
 				console.log('rec', msgObj.msg, ': ledger blockheight', msgObj.chainstats.height, 'block', msgObj.blockstats.height);
@@ -210,21 +224,19 @@ function connect_to_server(){
 // =================================================================================
 //	UI Building
 // =================================================================================
-function build_ball(data){
+function build_artefact(data){
 	var html = '';
-	var colorClass = '';
-	var size = 'fa-5x';
+
+	//artefactVersion, artefactType, artefactName, hash, artefact, timestamp
+
+	//data.name = escapeHtml(data.name);
+	//data.color = escapeHtml(data.color);
+	//data.user = escapeHtml(data.user);
 	
-	data.name = escapeHtml(data.name);
-	data.color = escapeHtml(data.color);
-	data.user = escapeHtml(data.user);
-	
-	console.log('got a marble: ', data.color);
-	if(!$('#' + data.name).length){								//only populate if it doesn't exists
-		if(data.size == 16) size = 'fa-3x';
-		if(data.color) colorClass = data.color.toLowerCase();
+	console.log('got a artefact: ', data.artefactName);
+	if(!$('#' + data.hash).length){								//only populate if it doesn't exists
 		
-		html += '<span id="' + data.name + '" class="fa fa-circle ' + size + ' ball ' + colorClass + ' title="' + data.name + '" user="' + data.user + '"></span>';
+		html += '<span id="' + data.hash + '" class=".artefact fa fa-circle ' + 'fa-3x' + ' ball ' + 'green' + ' title="' + data.hash + '" user="' + bag.setup.USER2 + '"></span>';
 		if(data.user && data.user.toLowerCase() == bag.setup.USER1){
 			$('#user1wrap').append(html);
 		}
@@ -233,4 +245,14 @@ function build_ball(data){
 		}
 	}
 	return html;
+function show_artefact_details(event, id){
+    var left = event.pageX - $('#artefactDetails').parent().offset().left - 50;
+    if(left < 0) left = 0;
+
+    var html = '<p class="blckLegend"> Artefact Name: ' + id + '</p>';
+    html += '<hr class="line"/><p>Created: 1490780257587</p>';
+    html += '<p> Version: 1.0</p>';
+    html += '<p> Type: Release</p>';
+    html += '<p> Hash: cfe35fb8ff6a57893a0b9456c11ba53381a1756d</p>';
+    $('#artefactDetails').html(html).css('left', left).fadeIn();
 }

@@ -24,7 +24,7 @@ module.exports.process_msg = function(ws, data){
 			}
 		}
 		else if(data.type == 'get'){
-			console.log('get marbles msg');
+			console.log('get artefact msg');
 			chaincode.query.read(['_artefactindex'], cb_got_index);
 		}
 		else if(data.type == 'transfer'){
