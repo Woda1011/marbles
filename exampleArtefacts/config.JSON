@@ -1,8 +1,7 @@
 {
 	"description": "This is a sample .JSON-Artefact file to demonstrate the process",
-	"args": [{
-		"interval": 1
-	}, {
+	"parameter": {
+		"interval": 1, 
 		"position": 1
-	}]
+	}
 }

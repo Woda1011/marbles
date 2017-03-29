@@ -20,7 +20,7 @@ module.exports.process_msg = function(ws, data){
             console.log('data hashed with sha1: ' + JSON.stringify(data));
 
 			if(data.artefactType && data.artefactHash && data.artefactName && data.artefactVersion && data.artefact){
-				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, data.artefactHash, data.artefactType, data.artefact], cb_invoked);
+				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, data.artefactHash, data.artefactType, JSON.stringify(data.artefact)], cb_invoked);
 			}
 		}
 		else if(data.type == 'get'){
