@@ -16,14 +16,17 @@ $(document).on('ready', function() {
         console.log('found file: ' + $('input[name="artefactFile"]').val());
         var file = $('input[name="artefactFile"]')[0].files[0];
         console.log('got file: ' + file);
-        fileReader.onload = function (event) {
-            console.log('finished parsing as array buffer: ' + event.target.result);
-            var obj = {
+
+        fileReader.onload = function () {
+        	console.log('finished parsing as as text: ' + this.result);
+        	var artefactData = JSON.parse(this.result);
+
+        	var obj = {
                 type: 'create',
                 artefactType: $('select[name="artefactType"]').val(),
                 artefactName: $('input[name="artefactName"]').val(),
                 artefactVersion: $('input[name="artefactVersion"]').val(),
-                artefact: event.target.result,
+                artefact: artefactData,
                 v: 1
             };
 
@@ -35,8 +38,8 @@ $(document).on('ready', function() {
 
             return false;
         };
-        console.log('Parsing as array buffer');
-        fileReader.readAsArrayBuffer(file)
+        console.log('Parsing file as text');
+        fileReader.readAsText(file)
     });
 	
 	$('#homeLink').click(function(){
