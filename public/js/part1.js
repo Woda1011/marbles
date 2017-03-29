@@ -228,29 +228,34 @@ function connect_to_server(){
 // =================================================================================
 function build_artefact(data){
 	var html = '';
+    addArtefact(data);
+    console.log('got a artifact: ', data.artefactName);
 
-	//artefactVersion, artefactType, artefactName, hash, artefact, timestamp
+    var color = getColor(data.artefactType);
 
-	//data.name = escapeHtml(data.name);
-	//data.color = escapeHtml(data.color);
-	//data.user = escapeHtml(data.user);
-	addArtefact(data);
-	console.log('got a artefact: ', data.artefactName);
-	if(!$('#' + data.hash).length){								//only populate if it doesn't exists
-		
-		html += '<span id="' + data.hash + '" class=".artefact fa fa-circle ' + 'fa-3x' + ' ball ' + 'green' + ' title="' + data.hash + '" user="' + bag.setup.USER2 + '"></span>';
-		if(data.user && data.user.toLowerCase() == bag.setup.USER1){
-			$('#user1wrap').append(html);
-		}
-		else{
-			$('#user2wrap').append(html);
-		}
-	}
-	return html;
+    if (!$('#' + data.hash).length) {
+        html += '<span id="' + data.hash + '" class=".artefact fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + data.hash + '" user="' + bag.setup.USER2 + '"></span>';
+        $('#user2wrap').append(html);
+    }
+
+    return html;
+}
 }
 
 function addArtefact(artefactToAdd) {
         artefacts.set(artefactToAdd.hash, artefactToAdd);
+}
+
+function getColor(artefactType) {
+	if (artefactType === 'Release') {
+        return 'green';
+    } else if (artefactType === 'Feature') {
+        return 'blue'
+    } else if (artefactType === 'Bugfix') {
+        return 'red'
+    } else {
+        return 'white'
+    }
 }
 
 function showArtefactDetails(event, id){
