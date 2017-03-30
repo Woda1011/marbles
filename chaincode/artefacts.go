@@ -17,7 +17,7 @@ type SimpleChaincode struct {
 
 
 var artefactIndexStr = "_artefactindex"
-var deviceIndexStr = "_deviceindex"
+var deviceIndexStr = "_deviceIndex"
 
 type Artefact struct{
 	Version string `json:"artefactVersion"`
@@ -32,9 +32,8 @@ type Artefact struct{
 }
 
 type Device struct {
-	DeviceId string
-	CurrentArtefactName string
-	CurrentArtefactVerision string
+	DeviceId string `json:"deviceId"`
+	CurrentArtifactHash string `json:"currentArtifactHash "`
 }
 
 // Maybe needed to keep track of all deployment transactions
@@ -74,7 +73,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 		return nil, err
 	}
 
-	return nil, nil
+	return t.init_device(stub, args);
 }
 
 // ============================================================================================================================
@@ -266,32 +265,23 @@ func (t *SimpleChaincode) init_device(stub shim.ChaincodeStubInterface, args []s
 
 	var err error
 
-	if len(args) != 3 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 3")
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
 
-	//input sanitation
-	fmt.Println("- start init artefact")
+	fmt.Println("- start init device")
 	if len(args[0]) <= 0 {
 		return nil, errors.New("1st argument must be a non-empty string")
 	}
-	if len(args[1]) <= 0 {
-		return nil, errors.New("2nd argument must be a non-empty string")
-	}
-	if len(args[2]) <= 0 {
-		return nil, errors.New("3rd argument must be a non-empty string")
-	}
 
 	deviceId := args[0]
-	currentArtefactVersion 	:= args[1]
-	currentArtefactName 	:= args[2]
-	timestamp := makeTimestamp()
 
 	//check if device already exists
 	deviceAsBytes, err := stub.GetState(deviceId)
 	if err != nil {
 		return nil, errors.New("Failed to get Device for deviceId")
 	}
+
 	res := Device{}
 	json.Unmarshal(deviceAsBytes, &res)
 	if res.DeviceId == deviceId {
@@ -301,7 +291,7 @@ func (t *SimpleChaincode) init_device(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	//build the json string manually
-	str := `{"deviceId": "` + deviceId + `", + "currentArtefactVersion": "` + currentArtefactVersion + `", "artefactName": "` + currentArtefactName + `", "timestamp": "` + strconv.FormatInt(timestamp, 10) + `"}`
+	str := `{"deviceId": "` + deviceId + `", + "currentArtifactHash": "" }`
 	err = stub.PutState(deviceId, []byte(str))
 	if err != nil {
 		return nil, err
