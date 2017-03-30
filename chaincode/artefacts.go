@@ -326,38 +326,28 @@ func (t *SimpleChaincode) init_device(stub shim.ChaincodeStubInterface, args []s
 func (t *SimpleChaincode) deploy_artifact(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
-	if len(args) < 2 {
+	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 2")
-	}
-
-	if len(args[0]) <= 0 {
-		return nil, errors.New("1st argument must be a non-empty string")
-	}
-
-	if len(args[1]) <= 0 {
-		return nil, errors.New("2st argument must be a non-empty string")
 	}
 
 	fmt.Println("- deploy")
 	fmt.Println(args[0] + " - " + args[1])
 
-	deviceAsBytes, err := stub.GetState(args[0])
+	var deviceId = args[0]
+	var currentArtifactHash = args[1]
+
+	deviceAsBytes, err := stub.GetState(deviceId)
 	if err != nil {
 		return nil, errors.New("Failed to get device")
-	}
-
-	artifactAsBytes, err := stub.GetState(args[1])
-	if err != nil {
-		return artifactAsBytes, errors.New("Failed to get artifact")
 	}
 
 	res := Device{}
 	json.Unmarshal(deviceAsBytes, &res)
 
-	res.CurrentArtifactHash = args[1]
+	res.CurrentArtifactHash = currentArtifactHash
 
 	jsonAsBytes, _ := json.Marshal(res)
-	err = stub.PutState(args[0], jsonAsBytes)
+	err = stub.PutState(deviceId, jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}

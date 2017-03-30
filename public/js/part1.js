@@ -293,5 +293,5 @@ function showArtefactDetails(event, id){
 }
 
 function clear_artefacts(){										//empty blocks
-    artefact = new Map();
+    artefacts = new Map();
 }
