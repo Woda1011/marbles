@@ -209,7 +209,6 @@ ibc.load(options, function (err, cc){														//parse/load chaincode, respo
 		chaincode = cc;
 		console.log('deployed chaincode:', cc);
 		part1.setup(ibc, cc);																//pass the cc obj to part 1 node code
-
 		// ---- To Deploy or Not to Deploy ---- //
 		if(!cc.details.deployed_name || cc.details.deployed_name === ''){					//yes, go deploy
 			cc.deploy(

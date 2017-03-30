@@ -64,7 +64,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the initial device")
 	}
-	
+
 	var empty []string
 	jsonAsBytes, _ := json.Marshal(empty)
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)
@@ -296,7 +296,7 @@ func (t *SimpleChaincode) init_device(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	//build the json string manually
-	str := `{"deviceId": "` + deviceId + `", + "currentArtifactHash": "" }`
+	str := `{"deviceId": "` + deviceId + `", "currentArtifactHash": "" }`
 	err = stub.PutState(deviceId, []byte(str))
 	if err != nil {
 		return nil, err
