@@ -33,7 +33,7 @@ type Artefact struct{
 
 type Device struct {
 	DeviceId string `json:"deviceId"`
-	CurrentArtifactHash string `json:"currentArtifactHash "`
+	CurrentArtifactHash string `json:"currentArtifactHash"`
 }
 
 // Maybe needed to keep track of all deployment transactions
