@@ -71,7 +71,8 @@ module.exports.process_msg = function(ws, data){
 					});
 				}, function() {
 					sendMsg({msg: 'action', e: e, status: 'finished'});
-                    chaincode.query.read(['_deviceIndex'], cb_gotDeviceIndex);
+                    console.log('Start to read Devices...');
+					chaincode.query.read(['_deviceIndex'], cb_gotDeviceIndex);
 				});
 			}
 			catch(e){

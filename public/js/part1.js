@@ -48,6 +48,7 @@ $(document).on('ready', function() {
 		showHomePanel();
 	});
 
+	//TODO This could may be removed
 	$('#createLink').click(function(){
 		$('input[name="name"]').val('r' + randStr(6));
 	});
@@ -130,21 +131,22 @@ $(document).on('ready', function() {
 			ws.send(JSON.stringify({type: 'chainstats', v: 1}));
 		}, 1000);
 	}
-	
-	//transfer selected ball to user
-	function transfer(marbleName, user){
-		if(marbleName){
-			console.log('transfering', marbleName);
-			var obj = 	{
-							type: 'transfer',
-							name: marbleName,
-							user: user,
-							v: 1
-						};
-			ws.send(JSON.stringify(obj));
-			showHomePanel();
-		}
-	}
+
+    //TODO change to deployment transaction
+    //transfer selected artefact to device
+    function transfer(artefactHash, deviceId) {
+        if (artefactHash) {
+            console.log('deploying artifact hash: ', artefactHash);
+            var obj = {
+                type: 'deploy',
+                id: deviceId,
+				hash: artefactHash,
+                v: 1
+            };
+            ws.send(JSON.stringify(obj));
+            showHomePanel();
+        }
+    }
 });
 
 
