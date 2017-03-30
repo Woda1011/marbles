@@ -61,6 +61,10 @@ func main() {
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	var err error
 	//marshal an emtpy array of strings to clear the index for the artefacts and the devices
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting name of the initial device")
+	}
+	
 	var empty []string
 	jsonAsBytes, _ := json.Marshal(empty)
 	err = stub.PutState(artefactIndexStr, jsonAsBytes)
@@ -82,7 +86,6 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
-
 	if function == "init" {
 		return t.Init(stub, "init", args)
 	} else if function == "delete" {
@@ -90,6 +93,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return res, err
 	} else if function == "init_artefact" {
 		return t.init_artefact(stub, args)
+	} else if function == "init_device" {
+		return t.init_device(stub, args)
 	} else if function == "deploy_artifact" {
 		res, err := t.deploy_artifact(stub, args)
 		return res, err
