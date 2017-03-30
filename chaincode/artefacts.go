@@ -90,8 +90,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return res, err
 	} else if function == "init_artefact" {
 		return t.init_artefact(stub, args)
-	} else if function == "deploy_artefact" {
-		res, err := t.deploy_artefact(stub, args)
+	} else if function == "deploy_artifact" {
+		res, err := t.deploy_artifact(stub, args)
 		return res, err
 	}
 	fmt.Println("invoke did not find func: " + function)
@@ -303,60 +303,63 @@ func (t *SimpleChaincode) init_device(stub shim.ChaincodeStubInterface, args []s
 		return nil, errors.New("Failed to get device index")
 	}
 	var deviceIndex []string
-	json.Unmarshal(devicesAsBytes, &deviceIndex)							//un stringify it aka JSON.parse()
+	json.Unmarshal(devicesAsBytes, &deviceIndex)
 
 	//append
-	deviceIndex = append(deviceIndex, deviceId)									//add marble name to index list
+	deviceIndex = append(deviceIndex, deviceId)
 	fmt.Println("! device index: ", deviceIndex)
 	jsonAsBytes, _ := json.Marshal(deviceIndex)
-	err = stub.PutState(deviceIndexStr, jsonAsBytes)						//store name of marble
+	err = stub.PutState(deviceIndexStr, jsonAsBytes)
 
 	fmt.Println("- end init device")
 	return nil, nil
 }
 
 // ============================================================================================================================
-// Set User Permission on Marble
+// Set current Artifact Hash of a Device
 // ============================================================================================================================
-func (t *SimpleChaincode) deploy_artefact(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) deploy_artifact(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
-
-	//deviceId requests an artefact. deviceId needs to be mapped on artefact UUID (name+version)
-
-	//   0       1
-	// "deviceId", "artefactName", "artefactVersion"
-	if len(args) < 3 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 3")
+	if len(args) < 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2")
 	}
-	
+
+	if len(args[0]) <= 0 {
+		return nil, errors.New("1st argument must be a non-empty string")
+	}
+
+	if len(args[1]) <= 0 {
+		return nil, errors.New("2st argument must be a non-empty string")
+	}
+
 	fmt.Println("- deploy")
 	fmt.Println(args[0] + " - " + args[1])
+
 	deviceAsBytes, err := stub.GetState(args[0])
 	if err != nil {
 		return nil, errors.New("Failed to get device")
 	}
 
-	artefactAsBytes, err := stub.GetState(args[1] + args[2])
+	artifactAsBytes, err := stub.GetState(args[1])
 	if err != nil {
-		return artefactAsBytes, errors.New("Failed to get artefact")
+		return artifactAsBytes, errors.New("Failed to get artifact")
 	}
 
 	res := Device{}
 	json.Unmarshal(deviceAsBytes, &res)
-	res.CurrentArtefactName = args[1]
-	res.CurrentArtefactVerision = args[2]
-	
+
+	res.CurrentArtifactHash = args[1]
+
 	jsonAsBytes, _ := json.Marshal(res)
 	err = stub.PutState(args[0], jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	fmt.Println("- end deploy artefact")
 	return nil, nil
 }
-
 
 // ============================================================================================================================
 // Make Timestamp - create a timestamp in ms

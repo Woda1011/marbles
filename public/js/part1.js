@@ -195,7 +195,7 @@ function connect_to_server(){
 			var msgObj = JSON.parse(msg.data);
 
 			//TODO if object is an device draw it on the left side
-			if(msgObj.device){
+			if(msgObj.device && msgObj.device.currentArtifactHash){
                 console.log('rec', msgObj.msg, msgObj);
                 buildDevice(msgObj.device);
             } else if(msgObj.artefact){
