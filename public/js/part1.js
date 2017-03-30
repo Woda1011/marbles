@@ -54,24 +54,29 @@ $(document).on('ready', function() {
 
 	//drag and drop marble
 	$('#user2wrap, #user1wrap, #trashbin').sortable({connectWith: '.sortable'}).disableSelection();
-	$('#user2wrap').droppable({drop:
-		function( event, ui ) {
-			var user = $(ui.draggable).attr('user');
-			if(user.toLowerCase() != bag.setup.USER2){
-				$(ui.draggable).addClass('invalid');
-				transfer($(ui.draggable).attr('id'), bag.setup.USER2);
-			}
-		}
-	});
-	$('#user1wrap').droppable({drop:
-		function( event, ui ) {
-			var user = $(ui.draggable).attr('user');
-			if(user.toLowerCase() != bag.setup.USER1){
-				$(ui.draggable).addClass('invalid');
-				transfer($(ui.draggable).attr('id'), bag.setup.USER1);
-			}
-		}
-	});
+
+    $('#user2wrap').droppable({
+        drop: function (event, ui) {
+        	//TODO Disable the drag and drop action on the device site.
+			console.log('Dragged Item: ', ui);
+            var user = $(ui.draggable).attr('user');
+            if (user.toLowerCase() != bag.setup.USER2) {
+                $(ui.draggable).addClass('invalid');
+                transfer($(ui.draggable).attr('id'), bag.setup.USER2);
+            }
+        }
+    });
+    $('#user1wrap').droppable({
+        drop: function (event, ui) {
+            //TODO Only allow to deploy artefacts in the device
+        	console.log('Dragged Item from right to the left: ', ui);
+            var user = $(ui.draggable).attr('user');
+            if (user.toLowerCase() != bag.setup.USER1) {
+                $(ui.draggable).addClass('invalid');
+                transfer($(ui.draggable).attr('id'), bag.setup.USER1);
+            }
+        }
+    });
 	$('#trashbin').droppable({drop:
 		function( event, ui ) {
 			var id = $(ui.draggable).attr('id');
@@ -116,8 +121,7 @@ $(document).on('ready', function() {
 		
 		var part = window.location.pathname.substring(0,3);
 		window.history.pushState({},'', part + '/home');						//put it in url so we can f5
-		
-		//TODO Load Softwareartefacts
+
         console.log('getting new artefacts');
 		setTimeout(function(){
 			$('#user1wrap').html('');											//reset the panel
@@ -187,7 +191,12 @@ function connect_to_server(){
 	function onMessage(msg){
 		try{
 			var msgObj = JSON.parse(msg.data);
-			if(msgObj.artefact){
+
+			//TODO if object is an device draw it on the left side
+			if(msgObj.device){
+                console.log('rec', msgObj.msg, msgObj);
+                buildDevice(msgObj.device);
+            } else if(msgObj.artefact){
 				console.log('rec', msgObj.msg, msgObj);
 				build_artefact(msgObj.artefact);
 			}
@@ -240,6 +249,18 @@ function build_artefact(data){
 
     return html;
 }
+
+function buildDevice(data){
+    var html = '';
+    var artifact = artefacts.get(data.currentArtifactHash);
+    var color = getColor(artifact.artefactType);
+    console.log('got a device: ', data.deviceId);
+
+    if (!$('#' + data.hash).length) {
+        html += '<span id="' + data.hash + '" class="fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + artifact.hash + '" user="' + bag.setup.USER1 + '"></span>';
+        $('#user1wrap').append(html);
+    }
+    return html;
 }
 
 function addArtefact(artefactToAdd) {

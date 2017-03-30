@@ -23,9 +23,11 @@ module.exports.process_msg = function(ws, data){
 				chaincode.invoke.init_artefact([data.artefactVersion, data.artefactName, data.artefactHash, data.artefactType, JSON.stringify(data.artefact)], cb_invoked);
 			}
 		}
+		//Gets called everytime the homepanel is loaded
 		else if(data.type == 'get'){
 			console.log('get artefact msg');
 			chaincode.query.read(['_artefactindex'], cb_got_index);
+			//TODO Also query the deployed artefact for the device
 		}
 		else if(data.type == 'transfer'){
 			console.log('transfering msg');
@@ -69,6 +71,7 @@ module.exports.process_msg = function(ws, data){
 					});
 				}, function() {
 					sendMsg({msg: 'action', e: e, status: 'finished'});
+                    chaincode.query.read(['_deviceIndex'], cb_gotDeviceIndex);
 				});
 			}
 			catch(e){
@@ -76,6 +79,36 @@ module.exports.process_msg = function(ws, data){
 			}
 		}
 	}
+
+    function cb_gotDeviceIndex(e, index) {
+        if (e != null) {
+            console.log('[ws error] did not get device index:', e);
+        }
+        else {
+            try {
+                var json = JSON.parse(index);
+                console.log('[ws info] got device index:', index);
+                var keys = Object.keys(json);
+                var concurrency = 1;
+
+                async.eachLimit(keys, concurrency, function (key, cb) {
+                    console.log('!', json[key]);
+                    chaincode.query.read([json[key]], function (e, device) {
+                        if (e != null) console.log('[ws error] did not get device:', e);
+                        else {
+                            if (device) sendMsg({msg: 'device', e: e, device: JSON.parse(device)});
+                            cb(null);
+                        }
+                    });
+                }, function () {
+                    sendMsg({msg: 'action', e: e, status: 'finished'});
+                });
+            }
+            catch (e) {
+                console.log('[ws error] could not parse response', e);
+            }
+        }
+    }
 	
 	function cb_invoked(e, a){
 		console.log('response: ', e, a);
