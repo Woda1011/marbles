@@ -53,7 +53,7 @@ $(document).on('ready', function() {
 		$('input[name="name"]').val('r' + randStr(6));
 	});
 
-	//drag and drop marble
+	//drag and drop artifacts
 	$('#user2wrap, #user1wrap, #trashbin').sortable({connectWith: '.sortable'}).disableSelection();
 
     $('#user2wrap').droppable({
@@ -132,7 +132,6 @@ $(document).on('ready', function() {
 		}, 1000);
 	}
 
-    //TODO change to deployment transaction
     //transfer selected artefact to device
     function transfer(artefactHash, deviceId) {
         if (artefactHash) {
@@ -194,16 +193,15 @@ function connect_to_server(){
 		try{
 			var msgObj = JSON.parse(msg.data);
 
-			//TODO if object is an device draw it on the left side
-			if(msgObj.device && msgObj.device.currentArtifactHash){
-                console.log('rec', msgObj.msg, msgObj);
+            if (msgObj.device && msgObj.device.currentArtifactHash) {
+                console.log('rec d', msgObj.msg, msgObj);
                 buildDevice(msgObj.device);
-            } else if(msgObj.artefact){
-				console.log('rec', msgObj.msg, msgObj);
-				build_artefact(msgObj.artefact);
-			}
+            } else if (msgObj.artefact) {
+                console.log('rec a', msgObj.msg, msgObj);
+                build_artefact(msgObj.artefact);
+            }
 			else if(msgObj.msg === 'chainstats'){
-				console.log('rec', msgObj.msg, ': ledger blockheight', msgObj.chainstats.height, 'block', msgObj.blockstats.height);
+				console.log('rec cs', msgObj.msg, ': ledger blockheight', msgObj.chainstats.height, 'block', msgObj.blockstats.height);
 				if(msgObj.blockstats && msgObj.blockstats.transactions) {
                     var e = formatDate(msgObj.blockstats.transactions[0].timestamp.seconds * 1000, '%M/%d/%Y &nbsp;%I:%m%P');
                     $('#blockdate').html('<span style="color:#fff">TIME</span>&nbsp;&nbsp;' + e + ' UTC');
@@ -233,7 +231,6 @@ function connect_to_server(){
 	}
 }
 
-
 // =================================================================================
 //	UI Building
 // =================================================================================
@@ -245,21 +242,21 @@ function build_artefact(data){
     var color = getColor(data.artefactType);
 
     if (!$('#' + data.hash).length) {
-        html += '<span id="' + data.hash + '" class=".artefact fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + data.hash + '" user="' + bag.setup.USER2 + '"></span>';
+        html += '<span id="' + data.hash + '" class="fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + data.hash + '" user="' + bag.setup.USER2 + '"></span>';
         $('#user2wrap').append(html);
     }
 
     return html;
 }
 
-function buildDevice(data){
+function buildDevice(data) {
+    console.log('got a device: ', data);
     var html = '';
     var artifact = artefacts.get(data.currentArtifactHash);
     var color = getColor(artifact.artefactType);
-    console.log('got a device: ', data.deviceId);
 
     if (!$('#' + data.hash).length) {
-        html += '<span id="' + data.hash + '" class="fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + artifact.hash + '" user="' + bag.setup.USER1 + '"></span>';
+        html += '<span id="' + artifact.hash + '" class="fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + artifact.hash + '" user="' + bag.setup.USER1 + '"></span>';
         $('#user1wrap').append(html);
     }
     return html;

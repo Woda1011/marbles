@@ -32,7 +32,6 @@ module.exports.process_msg = function(ws, data){
 		else if(data.type == 'deploy'){
 			console.log('deploying msg');
 			if(data.id && data.hash){
-			    //TODO Updating Chaincode to invoke artifact deployment
 				chaincode.invoke.deploy_artifact([data.id, data.hash], cb_invoked);
 			}
 		}
