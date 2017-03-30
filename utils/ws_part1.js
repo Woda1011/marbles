@@ -29,11 +29,11 @@ module.exports.process_msg = function(ws, data){
 			chaincode.query.read(['_artefactindex'], cb_got_index);
 			//TODO Also query the deployed artefact for the device
 		}
-		else if(data.type == 'transfer'){
-			console.log('transfering msg');
-			if(data.name && data.user){
-			    //TODO Transfer Artefact to Device, after it sent an Update Request
-				chaincode.invoke.set_user([data.name, data.user]);
+		else if(data.type == 'deploy'){
+			console.log('deploying msg');
+			if(data.id && data.hash){
+			    //TODO Updating Chaincode to invoke artifact deployment
+				chaincode.invoke.deploy_artifact([data.id, data.hash], cb_invoked);
 			}
 		}
 		else if(data.type == 'remove'){
