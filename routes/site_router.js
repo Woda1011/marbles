@@ -31,4 +31,9 @@ router.route('/p1/:page?').get(function(req, res){
 	res.render('part1', {title: 'Blockchain Demo', bag: build_bag()});
 });
 
+// ============================================================================================================================
+// REST-Api for IoT-Device to fetch artefact data
+// ============================================================================================================================
+//TODO To be done
+
 module.exports = router;
