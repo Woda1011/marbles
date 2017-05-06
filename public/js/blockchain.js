@@ -27,7 +27,9 @@ function show_details(event, id){								//build the block details html
 	var left = event.pageX - $('#details').parent().offset().left - 50;
 	if(left < 0) left = 0;
 	var ccid = blocks[id].blockstats.transactions[0].chaincodeID;
+	console.log('Chaincode ID', ccid);
 	var payload = blocks[id].blockstats.transactions[0].payload;
+    console.log('Payload', payload);
 
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
 	html += '<hr class="line"/><p>Created: &nbsp;' + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, '%M-%d-%Y %I:%m%p') + ' UTC</p>';

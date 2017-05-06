@@ -28,5 +28,8 @@ Zeile 197
 "enrollId": "bob", "enrollSecret": "NOE63pEQbL25"
 
 
-######
+###### Login to Blockchain Cloud
 ssh blockchain@blockchain-12b7p377.cloudapp.net
+
+###### Url Endpoint ti Azure
+http://blockchain-12b7p377.cloudapp.net:3000/
