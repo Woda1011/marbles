@@ -27,7 +27,7 @@ module.exports.process_msg = function(ws, data){
 		else if(data.type == 'get'){
 			console.log('get artefact msg');
 			chaincode.query.read(['_artefactindex'], cb_got_index);
-			//TODO Also query the deployed artefact for the device
+            chaincode.query.read(['_deviceIndex'], cb_gotDeviceIndex);
 		}
 		else if(data.type == 'deploy'){
 			console.log('deploying msg');
@@ -70,8 +70,8 @@ module.exports.process_msg = function(ws, data){
 					});
 				}, function() {
 					sendMsg({msg: 'action', e: e, status: 'finished'});
-                    console.log('Start to read Devices...');
-					chaincode.query.read(['_deviceIndex'], cb_gotDeviceIndex);
+                    //console.log('Start to read Devices...');
+					//chaincode.query.read(['_deviceIndex'], cb_gotDeviceIndex);
 				});
 			}
 			catch(e){
@@ -94,11 +94,22 @@ module.exports.process_msg = function(ws, data){
                 async.eachLimit(keys, concurrency, function (key, cb) {
                     console.log('!', json[key]);
                     chaincode.query.read([json[key]], function (e, device) {
-                        if (e != null) console.log('[ws error] did not get device:', e);
-                        else {
-                            if (device) sendMsg({msg: 'device', e: e, device: JSON.parse(device)});
-                            cb(null);
+                        if (e != null) {
+                            console.log('[ws error] did not get device:', e);
                         }
+                        else if (device){
+                            device = JSON.parse(device);
+                            chaincode.query.read([device.currentArtifactHash], function (e, artifact) {
+                                if (e !== null) {
+                                    console.log('[ws error] did not get artifact for device:', e);
+                                }
+                                else if (artifact) {
+                                    sendMsg({msg: 'device', e: e, device: device, currentArtifact: JSON.parse(artifact)});
+                                }
+                            });
+                            sendMsg({msg: 'device', e: e, device: device});
+                        }
+                        cb(null);
                     });
                 }, function () {
                     sendMsg({msg: 'action', e: e, status: 'finished'});

@@ -193,9 +193,9 @@ function connect_to_server(){
 		try{
 			var msgObj = JSON.parse(msg.data);
 
-            if (msgObj.device && msgObj.device.currentArtifactHash) {
+            if (msgObj.device && msgObj.currentArtifact) {
                 console.log('rec d', msgObj.msg, msgObj);
-                buildDevice(msgObj.device);
+                buildDevice(msgObj.device, msgObj.currentArtifact);
             } else if (msgObj.artefact) {
                 console.log('rec a', msgObj.msg, msgObj);
                 build_artefact(msgObj.artefact);
@@ -249,13 +249,12 @@ function build_artefact(data){
     return html;
 }
 
-function buildDevice(data) {
-    console.log('got a device: ', data);
+function buildDevice(device, artifact) {
+    console.log('got a device: ', device);
     var html = '';
-    var artifact = artefacts.get(data.currentArtifactHash);
     var color = getColor(artifact.artefactType);
 
-    if (!$('#' + data.hash).length) {
+    if (!$('#' + device.hash).length) {
         html += '<span id="' + artifact.hash + '" class="fa fa-circle ' + 'fa-3x' + ' ball ' + color + ' title="' + artifact.hash + '" user="' + bag.setup.USER1 + '"></span>';
         $('#user1wrap').append(html);
     }
