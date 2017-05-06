@@ -26,9 +26,9 @@ $(document).on('ready', function() {
 function show_details(event, id){								//build the block details html
 	var left = event.pageX - $('#details').parent().offset().left - 50;
 	if(left < 0) left = 0;
-	var ccid = blocks[id].blockstats.transactions[0].chaincodeID;
+	var ccid = atob(blocks[id].blockstats.transactions[0].chaincodeID);
 	console.log('Chaincode ID', ccid);
-	var payload = blocks[id].blockstats.transactions[0].payload;
+	var payload = atob(blocks[id].blockstats.transactions[0].payload);
     console.log('Payload', payload);
 
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
@@ -97,8 +97,8 @@ function formatType(i){											//spell out deploy or invoke
 }
 
 function formatPayload(str, ccid){								//create a sllliiiggghhhtttlllllyyy better payload name from decoded payload
-	var func = ['init', 'delete', 'write', 'init_artefact', 'set_user', 'open_trade', 'perform_trade', 'remove_trade'];
-	str =  str.substring(str.indexOf(ccid) + ccid.length);
+	var func = ['init', 'delete', 'write', 'init_artefact', 'deploy_artifact', 'open_trade', 'perform_trade', 'remove_trade'];
+	str =  str.substring(str.indexOf(ccid) + ccid.length + 4);
 	for(var i in func){
 		if(str.indexOf(func[i]) >= 0){
 			return func[i] + ': ' + str.substr(func[i].length);
