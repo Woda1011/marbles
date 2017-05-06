@@ -27,14 +27,13 @@ function show_details(event, id){								//build the block details html
 	var left = event.pageX - $('#details').parent().offset().left - 50;
 	if(left < 0) left = 0;
 	var ccid = atob(blocks[id].blockstats.transactions[0].chaincodeID);
-	var prevblockhash = blocks[id].blockstats.previousBlockHash;
 	console.log('Chaincode ID', ccid);
 	var payload = atob(blocks[id].blockstats.transactions[0].payload);
     console.log('Payload', payload);
 
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
 	html += '<hr class="line"/><p>Created: &nbsp;' + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, '%M-%d-%Y %I:%m%p') + ' UTC</p>';
-	html += '<p> PrevBlockHash:  &nbsp;' + prevblockhash + '</p>';
+	html += '<p> CC ID:  &nbsp;' + ccid + '</p>';
 	html += '<p> Payload:  &nbsp;' + formatPayload(payload, ccid) + '</p>';
 	$('#details').html(html).css('left', left).fadeIn();
 }
