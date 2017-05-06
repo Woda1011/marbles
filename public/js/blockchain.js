@@ -31,9 +31,9 @@ function show_details(event, id){								//build the block details html
 
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
 	html += '<hr class="line"/><p>Created: &nbsp;' + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, '%M-%d-%Y %I:%m%p') + ' UTC</p>';
-	html += '<p> UUID: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatUUID(blocks[id].blockstats.transactions[0].type, blocks[id].blockstats.transactions[0].uuid) + '</p>';
-	html += '<p> Type:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatType(blocks[id].blockstats.transactions[0].type) + '</p>';
-	html += '<p> CC ID:  &nbsp;&nbsp;&nbsp;&nbsp;' + ccid + '</p>';
+	//html += '<p> UUID: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatUUID(blocks[id].blockstats.transactions[0].type, blocks[id].blockstats.transactions[0].uuid) + '</p>';
+	//html += '<p> Type:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatType(blocks[id].blockstats.transactions[0].type) + '</p>';
+	html += '<p> CC ID:  &nbsp;' + ccid + '</p>';
 	html += '<p> Payload:  &nbsp;' + formatPayload(payload, ccid) + '</p>';
 	$('#details').html(html).css('left', left).fadeIn();
 }
@@ -98,7 +98,7 @@ function formatType(i){											//spell out deploy or invoke
 
 function formatPayload(str, ccid){								//create a sllliiiggghhhtttlllllyyy better payload name from decoded payload
 	var func = ['init', 'delete', 'write', 'init_artefact', 'set_user', 'open_trade', 'perform_trade', 'remove_trade'];
-	str =  str.substring(str.indexOf(ccid) + ccid.length + 4);
+	str =  str.substring(str.indexOf(ccid) + ccid.length);
 	for(var i in func){
 		if(str.indexOf(func[i]) >= 0){
 			return func[i] + ': ' + str.substr(func[i].length);
