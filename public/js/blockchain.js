@@ -31,8 +31,6 @@ function show_details(event, id){								//build the block details html
 
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
 	html += '<hr class="line"/><p>Created: &nbsp;' + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, '%M-%d-%Y %I:%m%p') + ' UTC</p>';
-	//html += '<p> UUID: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatUUID(blocks[id].blockstats.transactions[0].type, blocks[id].blockstats.transactions[0].uuid) + '</p>';
-	//html += '<p> Type:  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + formatType(blocks[id].blockstats.transactions[0].type) + '</p>';
 	html += '<p> CC ID:  &nbsp;' + ccid + '</p>';
 	html += '<p> Payload:  &nbsp;' + formatPayload(payload, ccid) + '</p>';
 	$('#details').html(html).css('left', left).fadeIn();

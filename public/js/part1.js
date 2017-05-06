@@ -284,7 +284,7 @@ function showArtefactDetails(event, id){
     var temp = artefacts.get(id);
 
     var html = '<p class="blckLegend"> Artefact Name: ' + temp.artefactName + '</p>';
-    html += '<hr class="line"/><p>Created: ' + formatDate(temp.timestamp * 1000, '%M-%d-%Y %I:%m%p') + '</p>';
+    html += '<hr class="line"/><p>Created: ' + formatDate(temp.timestamp, '%M-%d-%Y %I:%m%p') + '</p>';
     html += '<p> Version: ' + temp.artefactVersion + '</p>';
     html += '<p> Type: ' + temp.artefactType + '</p>';
     html += '<p> Hash: ' + temp.hash + '</p>';
