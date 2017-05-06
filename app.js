@@ -194,7 +194,7 @@ var options = {
         git_url: 'github.com/marbles/chaincode',						//GO get http url
 
         //hashed cc name from prev deployment, comment me out to always deploy, uncomment me when its already deployed to skip deploying again
-        deployed_name: '360c6f24c4b7e47126f9e935c2f29244725e585939770addfcd5642356c4f706f6416698f8b462b7faf48cd5c3d8865f439f8126eb9045e2226610b374f86bd9'
+        //deployed_name: '360c6f24c4b7e47126f9e935c2f29244725e585939770addfcd5642356c4f706f6416698f8b462b7faf48cd5c3d8865f439f8126eb9045e2226610b374f86bd9'
     }
 };
 
