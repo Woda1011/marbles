@@ -26,8 +26,8 @@ $(document).on('ready', function() {
 function show_details(event, id){								//build the block details html
 	var left = event.pageX - $('#details').parent().offset().left - 50;
 	if(left < 0) left = 0;
-	var ccid = formatCCID(blocks[id].blockstats.transactions[0].type, blocks[id].blockstats.transactions[0].uuid, atob(blocks[id].blockstats.transactions[0].chaincodeID));
-	var payload = atob(blocks[id].blockstats.transactions[0].payload);
+	var ccid = blocks[id].blockstats.transactions[0].chaincodeID;
+	var payload = blocks[id].blockstats.transactions[0].payload;
 
 	var html = '<p class="blckLegend"> Block Height: ' + blocks[id].id + '</p>';
 	html += '<hr class="line"/><p>Created: &nbsp;' + formatDate(blocks[id].blockstats.transactions[0].timestamp.seconds * 1000, '%M-%d-%Y %I:%m%p') + ' UTC</p>';
